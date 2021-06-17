@@ -1,10 +1,13 @@
 from flask import Flask, render_template
-from logging.handlers import RotatingFileHandler
 import os
 import random
 import logging
 
 app = Flask(__name__)
+
+logger = logging.getLogger('werkzeug')           # grabs underlying WSGI logger
+handler = logging.FileHandler('logs/test.log')        # creates handler for the log file
+logger.addHandler(handler)                       # adds handler to the werkzeug WSGI logger
 
 # list of cat images
 images = [
@@ -27,14 +30,8 @@ def index():
     url = random.choice(images)
     return render_template("index.html", url=url)
 
-def foo():
-    app.logger.warning('A warning occurred (%d apples)', 42)
-    app.logger.error('An error occurred')
-    app.logger.info('Info')
-    return 'foo'
+
 
 if __name__ == "__main__":
-    handler = RotatingFileHandler('foo.log', maxBytes=10000, backupCount=1)
-    handler.setLevel(logging.INFO)
-    app.logger.addHandler(handler)
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 1234)))
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 1234)), )
+
